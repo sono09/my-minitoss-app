@@ -17,3 +17,11 @@ npm run dev
 - 사주·주역·점성술 전체를 정교하게 구현한 것이 아니라, **간단한 규칙과 스토리텔링**으로 구성한 예시입니다.
 - 모든 계산은 브라우저 안에서만 이루어지며, 서버로 어떤 정보도 전송되지 않습니다.
 
+📱 Fintech Mini-App (Toss Platform)
+Status: Technical Approval Received (Passed Toss App Review)
+
+Tech Stack: JavaScript, Netlify
+
+Description: A utility mini-app designed for a major Korean fintech platform, Toss.
+
+Key Achievement: Successfully navigated the strict technical audit and security review process of a leading fintech ecosystem. Currently finalizing compliance for official launch.
