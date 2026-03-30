@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import Callback from "./Callback"; 
+import Callback from './Callback';
+// 토스 인증 콜백 화면
 import { calculateFortune, FortuneResult } from "./fortuneLogic";
 
 export const App: React.FC = () => {
