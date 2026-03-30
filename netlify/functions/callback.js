@@ -3,15 +3,54 @@ exports.handler = async (event) => {
   const accept = String(headers.accept || headers.Accept || "").toLowerCase();
 
   const queryParams = event.queryStringParameters || {};
-  const qs = new URLSearchParams(
-    Object.entries(queryParams).reduce((acc, [k, v]) => {
+
+  const getBodyParams = () => {
+    if (!event.body) return {};
+
+    const rawBody = event.isBase64Encoded
+      ? Buffer.from(event.body, "base64").toString("utf8")
+      : String(event.body);
+
+    const contentTypeHeader = headers["content-type"] || headers["Content-Type"] || "";
+    const contentType = String(contentTypeHeader).toLowerCase();
+
+    try {
+      if (contentType.includes("application/json")) {
+        const parsed = JSON.parse(rawBody);
+        if (!parsed || typeof parsed !== "object") return {};
+        const out = {};
+        for (const [k, v] of Object.entries(parsed)) {
+          if (v == null) continue;
+          out[k] = Array.isArray(v) ? v[0] : typeof v === "string" ? v : String(v);
+        }
+        return out;
+      }
+
+      // x-www-form-urlencoded or plain querystring body
+      const sp = new URLSearchParams(rawBody);
+      const out = {};
+      for (const [k, v] of sp.entries()) {
+        out[k] = v;
+      }
+      return out;
+    } catch {
+      return {};
+    }
+  };
+
+  const bodyParams = getBodyParams();
+
+  const mergedParams = {
+    ...(Object.entries(queryParams).reduce((acc, [k, v]) => {
       if (v == null) return acc;
       acc[k] = Array.isArray(v) ? v[0] : String(v);
       return acc;
-    }, {})
-  ).toString();
+    }, {})),
+    ...(bodyParams || {}),
+  };
 
-  const target = `/callback${qs ? `?${qs}` : ""}`;
+  const qs = new URLSearchParams(mergedParams).toString();
+  const target = `/callback-ui${qs ? `?${qs}` : ""}`;
 
   const basicAuthHeader =
     headers.authorization || headers.Authorization || headers.AUTHORIZATION || null;
@@ -23,7 +62,18 @@ exports.handler = async (event) => {
     try {
       const token = basicAuthHeader.slice(6);
       const decoded = Buffer.from(token, "base64").toString("utf8");
-      basicAuthOk = decoded.includes(":");
+      const idx = decoded.indexOf(":");
+      const user = idx >= 0 ? decoded.slice(0, idx) : "";
+      const pass = idx >= 0 ? decoded.slice(idx + 1) : "";
+
+      const expectedUser = process.env.BASIC_AUTH_USER;
+      const expectedPass = process.env.BASIC_AUTH_PASS;
+      if (expectedUser && expectedPass) {
+        basicAuthOk = user === expectedUser && pass === expectedPass;
+      } else {
+        // 환경변수가 없으면 “헤더 존재 + 기본형식(user:pass)만” 검증합니다.
+        basicAuthOk = idx >= 0;
+      }
     } catch {
       basicAuthOk = false;
     }

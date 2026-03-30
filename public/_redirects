@@ -1,2 +1,8 @@
+/* /callback -> Netlify Function
+/callback /.netlify/functions/callback 200
+/callback/* /.netlify/functions/callback 200
+/api/callback /.netlify/functions/callback 200
+/api/callback/* /.netlify/functions/callback 200
+
 /* /index.html   200
 
