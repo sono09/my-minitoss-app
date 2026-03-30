@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Callback from "./Callback"; // 1. 콜백 방 가져오기
+import Callback from "./Callback"; 
 import { calculateFortune, FortuneResult } from "./fortuneLogic";
 
 export const App: React.FC = () => {
@@ -7,10 +7,10 @@ export const App: React.FC = () => {
   const [result, setResult] = useState<FortuneResult | null>(null);
   const [touched, setTouched] = useState(false);
 
-  // 2. 지금 주소가 "/callback" 인지 확인하는 마법의 코드
+  // 1. 주소창이 "/callback" 인지 확인하는 기능이에요.
   const isCallbackPage = window.location.pathname === "/callback";
 
-  // 만약 주소가 "/callback" 이라면, 복잡한 운세 화면 말고 '콜백 방'만 보여줘!
+  // 만약 "/callback" 주소라면, 운세 화면 대신 '콜백 방'을 보여줘요!
   if (isCallbackPage) {
     return <Callback />;
   }
@@ -130,17 +130,15 @@ export const App: React.FC = () => {
                         text,
                       });
                     } catch {
-                      // 사용자가 취소한 경우 등은 조용히 무시
+                      // 취소 시 무시
                     }
                   } else if (navigator.clipboard) {
                     try {
                       await navigator.clipboard.writeText(text);
-                      alert("결과를 클립보드에 복사했어요. 친구에게 바로 붙여넣기 해 보세요!");
+                      alert("결과를 클립보드에 복사했어요!");
                     } catch {
-                      alert("공유 기능을 사용할 수 없어요. 직접 캡처해서 공유해 주세요!");
+                      alert("복사에 실패했어요.");
                     }
-                  } else {
-                    alert("공유 기능을 사용할 수 없어요. 직접 캡처해서 공유해 주세요!");
                   }
                 }}
               >
