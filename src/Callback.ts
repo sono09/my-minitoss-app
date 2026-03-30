@@ -2,16 +2,23 @@ import React, { useEffect } from 'react';
 
 const Callback = () => {
   useEffect(() => {
-    // 토스 redirect로 들어온 쿼리스트링을 확인합니다.
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+    const search = window.location.search.toLowerCase();
+    const shouldDisconnect = search.includes('uninstall') || search.includes('disconnect');
 
-    if (code) {
-      console.log('토스 인증 코드 획득!', code);
-      alert('토스 연결에 성공했습니다!');
+    if (!shouldDisconnect) return;
+
+    const t = window.setTimeout(() => {
       window.location.href = '/';
-    }
+    }, 1000);
+
+    return () => window.clearTimeout(t);
   }, []);
+
+  const search = window.location.search.toLowerCase();
+  const shouldDisconnect = search.includes('uninstall') || search.includes('disconnect');
+  const code = new URLSearchParams(window.location.search).get('code');
+
+  const message = shouldDisconnect ? '연결 해제 중...' : code ? '로그인 중...' : '로그인 처리 중입니다...';
 
   return React.createElement(
     'div',
@@ -26,7 +33,7 @@ const Callback = () => {
       },
     },
     React.createElement('div', { style: { fontSize: '40px' } }, '🔄'),
-    React.createElement('h2', { style: { marginTop: '20px' } }, '로그인 처리 중입니다...'),
+    React.createElement('h2', { style: { marginTop: '20px' } }, message),
     React.createElement('p', null, '잠시만 기다려 주세요!')
   );
 };

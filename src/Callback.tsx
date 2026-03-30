@@ -2,20 +2,23 @@ import { useEffect } from 'react';
 
 const Callback = () => {
   useEffect(() => {
-    // 토스 redirect로 들어온 쿼리스트링을 확인합니다.
-    // 1. 주소창에서 토스가 보낸 '인증 코드'를 쏙 뽑아옵니다.
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+    const search = window.location.search.toLowerCase();
+    const shouldDisconnect = search.includes('uninstall') || search.includes('disconnect');
 
-    if (code) {
-      // 2. 코드를 잘 가져왔는지 확인용 창을 띄웁니다.
-      console.log('토스 인증 코드 획득!', code);
-      alert('토스 연결에 성공했습니다!');
+    if (!shouldDisconnect) return;
 
-      // 3. 확인 버튼을 누르면 다시 메인 화면으로 돌아가게 합니다.
+    const t = window.setTimeout(() => {
       window.location.href = '/';
-    }
+    }, 1000);
+
+    return () => window.clearTimeout(t);
   }, []);
+
+  const search = window.location.search.toLowerCase();
+  const shouldDisconnect = search.includes('uninstall') || search.includes('disconnect');
+  const code = new URLSearchParams(window.location.search).get('code');
+
+  const message = shouldDisconnect ? '연결 해제 중...' : code ? '로그인 중...' : '로그인 처리 중입니다...';
 
   return (
     <div
@@ -29,7 +32,7 @@ const Callback = () => {
       }}
     >
       <div style={{ fontSize: '40px' }}>🔄</div>
-      <h2 style={{ marginTop: '20px' }}>로그인 처리 중입니다...</h2>
+      <h2 style={{ marginTop: '20px' }}>{message}</h2>
       <p>잠시만 기다려 주세요!</p>
     </div>
   );
