@@ -9,7 +9,8 @@ export const App: React.FC = () => {
   const [touched, setTouched] = useState(false);
 
   // 1. 주소창이 "/callback" 인지 확인하는 기능이에요.
-  const isCallbackPage = window.location.pathname === "/callback";
+  const pathname = window.location.pathname.replace(/\/+$/, "");
+  const isCallbackPage = pathname === "/callback";
 
   // 만약 "/callback" 주소라면, 운세 화면 대신 '콜백 방'을 보여줘요!
   if (isCallbackPage) {
