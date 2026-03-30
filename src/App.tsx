@@ -1,10 +1,19 @@
 import React, { useState } from "react";
+import Callback from "./Callback"; // 1. 콜백 방 가져오기
 import { calculateFortune, FortuneResult } from "./fortuneLogic";
 
 export const App: React.FC = () => {
   const [birthDate, setBirthDate] = useState("");
   const [result, setResult] = useState<FortuneResult | null>(null);
   const [touched, setTouched] = useState(false);
+
+  // 2. 지금 주소가 "/callback" 인지 확인하는 마법의 코드
+  const isCallbackPage = window.location.pathname === "/callback";
+
+  // 만약 주소가 "/callback" 이라면, 복잡한 운세 화면 말고 '콜백 방'만 보여줘!
+  if (isCallbackPage) {
+    return <Callback />;
+  }
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,4 +157,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
